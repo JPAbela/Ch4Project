@@ -1,12 +1,106 @@
-// postfix.java
-// parses postfix arithmetic expressions
-// to run this program: C>java PostfixApp
-package postfixapp;
+import java.io.*;
 
-import java.io.*; // for I/O
-////////////////////////////////////////////////////////////////
-class StackX
-{
+public class App {
+    public static void main(String[] args) throws IOException {
+         String input;
+        int output;
+        while(true)
+        {
+            System.out.print("Enter postfix: ");
+            System.out.flush();
+            input = getString(); // read a string from kbd
+            if( input.equals("") ) // quit if [Enter]
+                break;
+            // make a parser
+            ParsePost aParser = new ParsePost(input);
+            output = aParser.doParse(); // do the evaluation
+            System.out.println("Evaluates to " + output);
+        } // end while
+    } // end main()
+    //--------------------------------------------------------------
+    public static String getString() throws IOException
+    {
+        InputStreamReader isr = new InputStreamReader(System.in);
+        BufferedReader br = new BufferedReader(isr);
+        String s = br.readLine();
+        return s;
+    }
+    //--------------------------------------------------------------
+}
+
+
+
+class ParsePost {
+    
+    private StackX theStack;
+    private String input;
+    //--------------------------------------------------------------
+    public ParsePost(String s) {
+        
+        input = s;
+        System.out.println(s);
+    
+    }
+    //--------------------------------------------------------------
+    public int doParse()
+    {
+        theStack = new StackX(20); // make new stack
+        char ch;
+        int j, num1, num2, ans = 0;
+        for(j=0; j<input.length(); j++) // for each char,
+        {
+            ch = input.charAt(j); // read from input
+            theStack.displayStack(""+ch+" "); // *diagnostic*
+            
+
+            // if itâ€™s an operator...
+                // pop operands,
+                // do arithmetic,                
+                // push result
+            if (Character.isDigit(ch)) {
+
+                int s = Character.getNumericValue(ch);
+                theStack.push(s);
+            }
+            else if (ch == '*' || ch == '+' || ch == '-' || ch == '/') {
+
+               num1= theStack.pop();
+               num2 = theStack.pop();
+               
+               switch (ch) {
+
+                case '*':
+                            ans = num2 * num1;
+                            break;
+                case '+':
+                            ans = num2 + num1;
+                            break;
+                case '-':
+                            ans = num2 - num1;
+                            break;
+                case '/':
+                            ans = num2 / num1;
+                            break;
+               }
+
+               theStack.push(ans);
+            
+            }
+            else {
+                System.out.println("Invalid Input.");
+            }
+           
+        }
+        ans = theStack.pop(); // get answer
+        return ans;
+    }
+}
+
+
+
+
+class StackX {
+    
     private int maxSize;
     private int[] stackArray;
     private int top;
@@ -69,100 +163,4 @@ class StackX
         }
         System.out.println("");
     }
-    //--------------------------------------------------------------
-} // end class StackX
-////////////////////////////////////////////////////////////////
-class ParsePost
-{
-    private StackX theStack;
-    private String input;
-    //--------------------------------------------------------------
-    public ParsePost(String s)
-    { input = s; }
-    //--------------------------------------------------------------
-    public int doParse()
-    {
-        theStack = new StackX(20); // make new stack
-        char ch;
-        int j;
-        int num;
-        int num1, num2, interAns = 0;
-        for(j=0; j<input.length(); j++) // for each char,
-        {
-            ch = input.charAt(j); // read from input
-            theStack.displayStack(""+ch+" "); // *diagnostic*
-            
-
-            // if itâ€™s an operator...
-                // pop operands,
-                // do arithmetic,                
-                // push result
-            if (ch == '*' || ch == '+' || ch == '-' || ch == '/') {
-
-               num1 = theStack.pop();
-               num2 = theStack.pop();
-
-               switch (ch) {
-
-                case '*':
-                            interAns = num2 * num1;
-                            break;
-                case '+':
-                            interAns = num2 + num1;
-                            break;
-                case '-':
-                            interAns = num2 - num1;
-                            break;
-                case '/':
-                            interAns = num2 / num1;
-                            break;
-               }
-
-               theStack.push(interAns);
-            }
-
-            // if itâ€™s a number
-                // push it
-                
-            else {
-
-                num = Character.getNumericValue(ch);
-                theStack.push(num);
-            }
-           
-        }
-        interAns = theStack.pop(); // get answer
-        return interAns;
-    } // end doParse()
-} // end class ParsePost
-////////////////////////////////////////////////////////////////
-class PostfixApp
-{
-    public static void main(String[] args) throws IOException
-    {
-        String input;
-        int output;
-        while(true)
-        {
-            System.out.print("Enter postfix: ");
-            System.out.flush();
-            input = getString(); // read a string from kbd
-            if( input.equals("") ) // quit if [Enter]
-                break;
-            // make a parser
-            ParsePost aParser = new ParsePost(input);
-            output = aParser.doParse(); // do the evaluation
-            System.out.println("Evaluates to " + output);
-        } // end while
-    } // end main()
-    //--------------------------------------------------------------
-    public static String getString() throws IOException
-    {
-        InputStreamReader isr = new InputStreamReader(System.in);
-        BufferedReader br = new BufferedReader(isr);
-        String s = br.readLine();
-        return s;
-    }
-    //--------------------------------------------------------------
-} // end class PostfixApp
-////////////////////////////////////////////////////////////////
+}
